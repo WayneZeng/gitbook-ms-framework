@@ -1,0 +1,24 @@
+{
+  "title": "微服务架构解析",
+  "plugins": [
+    "sharing",
+    "git-author",
+    "expandable-chapters",
+    "anchorjs",
+    "prism",
+    "highlight",
+    "advanced-emoji",
+    "disqus"
+  ],
+  "pluginsConfig": {
+    "theme-default": {
+      "showLevel": true
+    },
+    "anchorjs": {
+      "placement": "right"
+    },
+    "disqus": {
+      "shortName": "gitbook-pages"
+    }
+  }
+}
