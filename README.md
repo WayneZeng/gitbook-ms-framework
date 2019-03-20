@@ -1,2 +1,18 @@
 # gitbook-ms-framework
-Microservice is a tiny, loosely coupled distributed service.   Each microservice can scale independently via X-axis scaling (cloning with more CPU or memory) and Z-axis scaling (sharding), based upn their needs.  Are you ready for a simple and neat way to know microservices?  Hopefully, this list will help you with making desisions and save some time.
+
+微服务是一个个独立的服务单元，每个微服务具备独立的水平扩展功能，通过水平扩展能获取更多的CPU和内存资源，
+微服务也能纵向扩展，支持更多分片，通过微服务的组合，能够构建出一个易于维护的大系统。
+
+本文会从一些大公司的微服务框架入手，教大家如何去搭建一个微服务。
+
+
+# 先从Netflix的框架入手
+
+![架构图](http://crawl.nosdn.127.net/nbotreplaceimg/97175c2f206ae89c6a523dbaf5f20a02/26cfffb9cbda8a51fd01d6752521ca56.jpg)
+
+本文讲拆分讲解这个架构的各个单元，
+以及每个单元的功能简介，用JAVA如何实现他的使用，适合初学者和有使用需求的人。
+部分框架会解读源码，适合进阶的者学习。
+
+
+
