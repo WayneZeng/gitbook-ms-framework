@@ -100,7 +100,132 @@ http://localhost:10002/hystrix/
 
 ![如图](./../asset/image/hystrix-dashboard.jpg)
 
-### 进阶：源码分析（todo）
+### 进阶：熔断源码解析
+
+- 入口，启动类注解 @EnableCircuitBreaker
+
+```java
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@Import(EnableCircuitBreakerImportSelector.class)
+public @interface EnableCircuitBreaker {
+
+}
+```
+
+这里import了 EnableCircuitBreakerImportSelector 这个selector，
+
+看下 EnableCircuitBreakerImportSelector 中的其他逻辑
+
+- EnableCircuitBreakerImportSelector
+```java
+@Order(Ordered.LOWEST_PRECEDENCE - 100)
+public class EnableCircuitBreakerImportSelector extends
+		SpringFactoryImportSelector<EnableCircuitBreaker> {
+
+	@Override
+	protected boolean isEnabled() {
+		return getEnvironment().getProperty(
+				"spring.cloud.circuit.breaker.enabled", Boolean.class, Boolean.TRUE);
+	}
+
+}
+```
+
+Order值越小，加载优先级越高
+EnableCircuitBreakerImportSelector继承SpringFactoryImportSelector会自动加载EnableCircuitBreaker
+
+然而在源码中能看到，EnableCircuitBreaker这个类又关联HystrixCircuitBreakerConfiguration
+
+![如图](./../asset/image/hystrix-springfac.png)
+
+顺藤摸瓜，看到其中定义了一个切面（Aspect）
+```java
+  @Bean
+  public HystrixCommandAspect hystrixCommandAspect() {
+    return new HystrixCommandAspect();
+  }
+```
+
+其对应的处理pointcut为HystrixCommand，所以被 @HystrixCommand注解的地方都会执行下面的函数
+```java
+    @Around("hystrixCommandAnnotationPointcut() || hystrixCollapserAnnotationPointcut()")
+    public Object methodsAnnotatedWithHystrixCommand(final ProceedingJoinPoint joinPoint) throws Throwable {
+        Method method = getMethodFromTarget(joinPoint);
+        Validate.notNull(method, "failed to get method from joinPoint: %s", joinPoint);
+        if (method.isAnnotationPresent(HystrixCommand.class) && method.isAnnotationPresent(HystrixCollapser.class)) {
+            throw new IllegalStateException("method cannot be annotated with HystrixCommand and HystrixCollapser " +
+                    "annotations at the same time");
+        }
+        MetaHolderFactory metaHolderFactory = META_HOLDER_FACTORY_MAP.get(HystrixPointcutType.of(method));
+        MetaHolder metaHolder = metaHolderFactory.create(joinPoint);
+        HystrixInvokable invokable = HystrixCommandFactory.getInstance().create(metaHolder);
+        ExecutionType executionType = metaHolder.isCollapserAnnotationPresent() ?
+                metaHolder.getCollapserExecutionType() : metaHolder.getExecutionType();
+
+        Object result;
+        try {
+            if (!metaHolder.isObservable()) {
+                result = CommandExecutor.execute(invokable, executionType, metaHolder);
+            } else {
+                result = executeObservable(invokable, executionType, metaHolder);
+            }
+        } catch (HystrixBadRequestException e) {
+            throw e.getCause();
+        } catch (HystrixRuntimeException e) {
+            throw hystrixRuntimeExceptionToThrowable(metaHolder, e);
+        }
+        return result;
+    }
+```
+
+其中核心代码是execute这一段，跳转进去看到
+```java
+public static Object execute(HystrixInvokable invokable, ExecutionType executionType, MetaHolder metaHolder) throws RuntimeException {
+        Validate.notNull(invokable);
+        Validate.notNull(metaHolder);
+
+        switch (executionType) {
+            case SYNCHRONOUS: {
+                return castToExecutable(invokable, executionType).execute();
+            }
+            case ASYNCHRONOUS: {
+                HystrixExecutable executable = castToExecutable(invokable, executionType);
+                if (metaHolder.hasFallbackMethodCommand()
+                        && ExecutionType.ASYNCHRONOUS == metaHolder.getFallbackExecutionType()) {
+                    return new FutureDecorator(executable.queue());
+                }
+                return executable.queue();
+            }
+            case OBSERVABLE: {
+                HystrixObservable observable = castToObservable(invokable);
+                return ObservableExecutionMode.EAGER == metaHolder.getObservableExecutionMode() ? observable.observe() : observable.toObservable();
+            }
+            default:
+                throw new RuntimeException("unsupported execution type: " + executionType);
+        }
+    }
+```
+
+这个方法的主干代码，就是根据executionType的不同类型执行不同逻辑
+对应关系如下：
+```
+SYNCHRONOUS --> HystrixExecutable.execute()
+ASYNCHRONOUS --> HystrixExecutable.queue()
+OBSERVABLE --> HystrixObservable.observe() 或 HystrixObservable.toObservable()
+
+```
+
+简单来说，这个注解，就是把一个java方法，转化成HystrixCommand
+其中用到了"面向切面编程AOP"大家可以自行再去学习
+
+这一篇就到这里了，喜欢请打赏5毛买包辣条
+
+![客观常来啊](./../asset/image/alipay.jpeg)
+
+
 
 
 
