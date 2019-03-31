@@ -221,7 +221,8 @@ OBSERVABLE --> HystrixObservable.observe() 或 HystrixObservable.toObservable()
 简单来说，这个注解，就是把一个java方法，转化成HystrixCommand
 其中用到了"面向切面编程AOP"大家可以自行再去学习
 
-这一篇就到这里了，喜欢请打赏5毛买包辣条
+这一篇就到这里了, [本文示例源码github](https://github.com/WayneZeng/springcloud-demo)
+喜欢请打赏5毛买包辣条
 
 ![客观常来啊](./../asset/image/alipay.jpeg)
 

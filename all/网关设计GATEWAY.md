@@ -78,6 +78,7 @@ public class GatewayServiceZuulApplication {
 
 ### 其他网关方案：Spring Cloud Gateway
 1 可以替代zuul的另外一种方案，比zuul 1.x的系列的性能和功能整体要好。
+2 zuul 2.x也不错，不过没有集成到springcloud框架中，据说是因为更新等太久，springcloud就没有选择zuul 2.x
 
 
 ```
@@ -156,4 +157,66 @@ public class GatewayApplication {
 2 浏览器输入：http://locahost:10001/header，会自动添加header头然后转发到www.baidu.com，常用于鉴权。
 ```
 
-### 源码解析（todo）
+### 源码解析：为什么通过@Bean加载 RouteLocator即可生成一个网关路由
+* 新手直接看gateway的源码容易内伤，这里我们就选择一个简单的 RouteLocator 代码看看。
+
+* 先看启动注解 @SpringBootApplication，跳转进入其中用到了 @EnableAutoConfiguration
+
+* EnableAutoConfiguration的原理这里不详述，其作用如下
+```
+@EnableAutoConfiguration作用：从classpath中搜索所有的META-INF/spring.factories配置文件，然后将其中key为org.springframework.boot.autoconfigure.EnableAutoConfiguration的value加载到spring容器中
+```
+
+* 看下gateway模块自动引入的包如下
+
+![如图](./../asset/image/gateway-metainf.jpeg)
+
+```
+自动注入的类如下：
+GatewayClassPathWarningAutoConfiguration - 检查项目是否正确导入 webflux
+GatewayAutoConfiguration - 核心配置
+GatewayLoadBalancerClientAutoConfiguration - 负载均衡客户端
+GatewayMetricsAutoConfiguration - 网关指标自动配置类
+GatewayRedisAutoConfiguration - 限流相关
+GatewayDiscoveryClientAutoConfiguration - 服务发现客户端
+
+```
+
+* 看下GatewayAutoConfiguration的注解
+
+```java
+@AutoConfigureBefore({HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class})
+@AutoConfigureAfter({GatewayLoadBalancerClientAutoConfiguration.class, GatewayClassPathWarningAutoConfiguration.class})
+```
+
+  - 知道加载顺 （GatewayLoadBalancerClientAutoConfiguration，GatewayClassPathWarningAutoConfiguration） 先于 （GatewayAutoConfiguration）
+  
+  - 其中 GatewayClassPathWarningAutoConfiguration
+```
+看下其中的告警信息，可以知道，如果引入了spring-boot-starter-web的依赖，是会报错的
+
+因为gateway是基于spring-webflux开发的，他依赖的DispatcherHandler
+和starter-web里的DispatcherServlet冲突
+```
+
+* GateWayAutoConfiguration是核心配置，其中加载了 RoutePredicateHandlerMapping
+
+```java
+ @Bean
+  public RoutePredicateHandlerMapping routePredicateHandlerMapping(FilteringWebHandler webHandler, RouteLocator routeLocator, GlobalCorsProperties globalCorsProperties, Environment environment) {
+    return new RoutePredicateHandlerMapping(webHandler, routeLocator, globalCorsProperties, environment);
+  }
+```
+
+* RoutePredicateHandlerMapping
+
+```
+RoutePredicateHandlerMapping是处理获取路由的hanlder。Route
+存储在RouteLocator，读到这里，可以知道，自定义RouteLocator，通过@Bean加载即可
+生成gateway可用的路由配置，也就是demo中的例子
+```
+
+### gateway的源码还有很多值得学习的地方，敬请期待
+
+这一篇就到这里了，还没有想好怎么把这么复杂的gateway简单讲出来，就不要打赏了
+
