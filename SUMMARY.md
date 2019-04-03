@@ -8,4 +8,5 @@
   * [熔断Hystrix](all/熔断Hystrix.md)
   * [服务注册与发现](all/服务注册与发现.md)
   * [配置中心](all/配置中心.md)
+  * [微服务管理](all/微服务管理.md)
 
