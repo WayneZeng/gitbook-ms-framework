@@ -8,10 +8,21 @@
 
 ## 先从Netflix的框架入手
 
-![架构图](http://crawl.nosdn.127.net/nbotreplaceimg/97175c2f206ae89c6a523dbaf5f20a02/26cfffb9cbda8a51fd01d6752521ca56.jpg)
+![架构图](./asset/image/netflix-ms.jpg)
 
-本文讲拆分讲解这个架构的各个单元，
-以及每个单元的功能简介，用JAVA如何实现他的使用，适合初学者和有使用需求的人。
+本系列讲拆分讲解这个架构的各个单元，
+
+* 负载均衡ELB
+* 网关gateway
+* 熔断Hystrix
+* 数据存储和获取（todo）
+* 服务注册与发现
+
+以及架构中没有提到，但是微服务架构一定会涉及的
+* 配置中心
+* 微服务管理
+
+每个单元的功能简介，用JAVA如何实现他的使用，适合初学者和有使用需求的人。
 部分框架会解读源码，适合进阶的者学习。
 
 [本文示例源码](https://github.com/WayneZeng/springcloud-demo)
