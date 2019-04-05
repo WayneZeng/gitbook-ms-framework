@@ -15,12 +15,14 @@
 * 负载均衡ELB
 * 网关gateway
 * 熔断Hystrix
-* 数据存储和获取（todo）
 * 服务注册与发现
+* 数据存储
 
 以及架构中没有提到，但是微服务架构一定会涉及的
 * 配置中心
 * 微服务管理
+* （todo）日志用 ElasticSearch
+* （todo）各种猴子（Chaos/Latency/Janitor/SecurityMonkey 等）
 
 每个单元的功能简介，用JAVA如何实现他的使用，适合初学者和有使用需求的人。
 部分框架会解读源码，适合进阶的者学习。
