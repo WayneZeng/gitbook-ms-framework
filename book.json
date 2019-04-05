@@ -28,8 +28,8 @@
       "shortName": "gitbook-pages"
     },
     "donate": {
-      "wechat": "./asset/common/wechat_pay.jpeg",
-      "alipay": "./asset/common/alipay.jpeg",
+      "wechat": "https://raw.githubusercontent.com/WayneZeng/gitbook-ms-framework/master/asset/common/wechat_pay.jpeg",
+      "alipay": "https://raw.githubusercontent.com/WayneZeng/gitbook-ms-framework/master/asset/common/alipay.jpeg",
       "title": "",
       "button": "大爷有赏",
       "alipayText": "支付宝打赏",
