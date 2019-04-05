@@ -1,7 +1,7 @@
 ### 话不多说前言
 * 一般出于安全考虑不会直接让客户端直接请求后端服务，所以加一个网关层（gateway），
 ```
-就像一个大门，
+就像一个大门（网关），
 客户端要拿着钥匙（鉴权），
 限定人数一次次通过大门（限流和整流）
 进入到指定后端服务（路由），
@@ -12,7 +12,7 @@
 ### 书中自有黄金屋
 
 - 客官,你看完了前言,如此优秀
-- 【支付宝扫码】奖励自己一下，后面还有。
+- 【支付宝扫码领取红包】奖励自己一下，后面还有。
 
 ![image](https://github.com/WayneZeng/gitbook-ms-framework/blob/master/asset/common/alipay_redpacket.jpeg?raw=true)
 
@@ -77,12 +77,13 @@ public class GatewayServiceZuulApplication {
 ```
 
 ### 其他网关方案：Spring Cloud Gateway
-1 可以替代zuul的另外一种方案，比zuul 1.x的系列的性能和功能整体要好。
-2 zuul 2.x也不错，不过没有集成到springcloud框架中，据说是因为更新等太久，springcloud就没有选择zuul 2.x
+- 可以替代zuul的另外一种方案，比zuul 1.x的系列的性能和功能整体要好。
+- zuul 2.x也不错，不过没有集成到springcloud框架中，据说是因为更新等太久，springcloud就没有选择zuul 2.x
 
 
 ```
-注意：Spring Cloud Finchley版本中，即使你引入了spring-cloud-starter-netflix-zuul，也不是2.0版本的zuul
+注意：Spring Cloud Finchley版本中，即使你引入了spring-cloud-starter-netflix-zuul，
+也不是2.0版本的zuul
 ```
 
 依赖如下：
@@ -218,5 +219,6 @@ RoutePredicateHandlerMapping是处理获取路由的hanlder。Route
 
 ### gateway的源码还有很多值得学习的地方，敬请期待
 
-这一篇就到这里了，还没有想好怎么把这么复杂的gateway简单讲出来，就不要打赏了
+这一篇就到这里了，还没有想好怎么把这么复杂的gateway简单讲出来，这里只是讲了一点点，就不要打赏了
+期待后续吧。
 

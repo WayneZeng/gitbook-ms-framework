@@ -1,12 +1,12 @@
 ### 话不多说前言
-负载均衡 简单来说就像分班考试，部分同学去重点班A，部分去奥数班B，部分去少年班C，作者本人去的是普通基础
+负载均衡 简单来说就像分班考试，入学人数太多，部分同学去重点班A，部分去奥数班B，部分去少年班C，作者本人去的是普通基础班，其实更适合终极一班
 
 ### 书中自有黄金屋
 
-- 客官,你看完了前言,如此优秀
+- 客官，你看完了前言,如此优秀
 - 【支付宝扫码】奖励自己一下，后面还有。
 
-![image](https://github.com/WayneZeng/gitbook-ms-framework/blob/master/asset/common/alipay_redpacket.jpeg?raw=true)
+![image](./../asset/common/alipay_redpacket_mini.jpeg)
 
 
 ### ELB
@@ -80,20 +80,15 @@ public class ConsistHash {
 
   private String[] servers;
 
-  /**
-   * 真实结点列表
-   */
+  // 真实结点列表
   private static List<String> realNodes = new LinkedList<>();
 
-  /**
-   * 虚拟节点，key表示虚拟节点的hash值，value表示虚拟节点的名称
-   */
+  // 虚拟节点，key表示虚拟节点的hash值，value表示虚拟节点的名称
   private static SortedMap<Integer, String> virtualNodes =
       new TreeMap<>();
 
-  /**
-   * 虚拟节点数目
-   */
+  
+  // 虚拟节点数目
   private static final int VIRTUAL_NODES = 150;
 
   public ConsistHash(String[] servers) {
@@ -114,9 +109,7 @@ public class ConsistHash {
     }
   }
 
-  /**
-   * 使用FNV1_32_HASH算法计算服务器的Hash值,这里不使用重写hashCode的方法，最终效果没区别
-   */
+  // 使用FNV1_32_HASH算法计算服务器的Hash值,这里不使用重写hashCode的方法，最终效果没区别
   private static int getHash(String str) {
     final int p = 16777619;
     int hash = (int) 2166136261L;
@@ -135,9 +128,7 @@ public class ConsistHash {
     return hash;
   }
 
-  /**
-   * 得到应当路由到的结点
-   */
+  // 得到应当路由到的结点
   public static String getServer(String node) {
     // 得到带路由的结点的Hash值
     int hash = getHash(node);
@@ -159,7 +150,8 @@ public class ConsistHash {
 * 监控服务，根据cpu使用量大小和流量大小，处理时长自动完成添加或者缩减实例服务
 * 应用负载均衡可以按照功能分发到对应的集群，比如登录给登录集群，支付给支付集群
 
+这一篇就到这里了， [本文示例源码github](https://github.com/WayneZeng/springcloud-demo)
 
-这一篇就到这里了，喜欢请打赏5毛买包辣条
+喜欢请打赏5毛买包狗粮
 
-![客观常来啊](./../asset/image/alipay.jpeg)
+![image](./../asset/common/alipay.jpeg)

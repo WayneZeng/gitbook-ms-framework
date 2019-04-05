@@ -3,12 +3,14 @@
 - 避免单个服务失败导致关联服务耗尽线程。
 - 思想：用快速失败替代排队
 - 熔断后x秒恢复半开状态，如果有成功恢复，否则继续熔断
+
 ```
-比如：订单系统请求库存系统，结果一个请求过去，因为各种原因，网络超时，在规定几秒内没反应，或者服务本身就挂了，这时候更多的请求来了，不断的请求库存服务，不断的创建线程，因为没有返回，也就资源没有释放，
+比如：订单系统请求库存系统，一个请求过去，网络超时，等待ing
+这时更多的请求，不断的请求，不断的创建线程，这导致系统资源被耗尽，
+你的服务奔溃了。
 
-这也导致了系统资源被耗尽，你的服务奔溃了，这订单系统好好的，你访问了一个可能有问题的库存系统，结果导致你的订单系统也奔溃了，你再继续调用更多的依赖服务，可会会导致更多的系统奔溃，这时候Hystrix可以实现快速失败，
-
-如果它在一段时间内侦测到许多类似的错误，会强迫其以后的多个调用快速失败，不再访问远程服务器，从而防止应用程序不断地尝试执行可能会失败的操作进而导致资源耗尽。这时候Hystrix进行FallBack操作来服务降级
+如果它在一段时间内侦测到许多类似的错误，会强迫其以后的多个调用快速失败，
+从而防止资源耗尽。
 ```
 
 ### 书中自有黄金屋
@@ -120,6 +122,7 @@ public @interface EnableCircuitBreaker {
 看下 EnableCircuitBreakerImportSelector 中的其他逻辑
 
 - EnableCircuitBreakerImportSelector
+
 ```java
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 public class EnableCircuitBreakerImportSelector extends
@@ -142,6 +145,7 @@ EnableCircuitBreakerImportSelector继承SpringFactoryImportSelector会自动加�
 ![如图](./../asset/image/hystrix-springfac.png)
 
 顺藤摸瓜，看到其中定义了一个切面（Aspect）
+
 ```java
   @Bean
   public HystrixCommandAspect hystrixCommandAspect() {
@@ -150,6 +154,7 @@ EnableCircuitBreakerImportSelector继承SpringFactoryImportSelector会自动加�
 ```
 
 其对应的处理pointcut为HystrixCommand，所以被 @HystrixCommand注解的地方都会执行下面的函数
+
 ```java
     @Around("hystrixCommandAnnotationPointcut() || hystrixCollapserAnnotationPointcut()")
     public Object methodsAnnotatedWithHystrixCommand(final ProceedingJoinPoint joinPoint) throws Throwable {
@@ -182,6 +187,7 @@ EnableCircuitBreakerImportSelector继承SpringFactoryImportSelector会自动加�
 ```
 
 其中核心代码是execute这一段，跳转进去看到
+
 ```java
 public static Object execute(HystrixInvokable invokable, ExecutionType executionType, MetaHolder metaHolder) throws RuntimeException {
         Validate.notNull(invokable);
@@ -211,6 +217,7 @@ public static Object execute(HystrixInvokable invokable, ExecutionType execution
 
 这个方法的主干代码，就是根据executionType的不同类型执行不同逻辑
 对应关系如下：
+
 ```
 SYNCHRONOUS --> HystrixExecutable.execute()
 ASYNCHRONOUS --> HystrixExecutable.queue()
@@ -221,10 +228,11 @@ OBSERVABLE --> HystrixObservable.observe() 或 HystrixObservable.toObservable()
 简单来说，这个注解，就是把一个java方法，转化成HystrixCommand
 其中用到了"面向切面编程AOP"大家可以自行再去学习
 
-这一篇就到这里了, [本文示例源码github](https://github.com/WayneZeng/springcloud-demo)
-喜欢请打赏5毛买包辣条
+这一篇就到这里了， [本文示例源码github](https://github.com/WayneZeng/springcloud-demo)
 
-![客观常来啊](./../asset/image/alipay.jpeg)
+喜欢请打赏5毛买包狗粮
+
+![image](./../asset/common/alipay.jpeg)
 
 
 
