@@ -24,7 +24,7 @@ Netflix是微服务架构的先驱，本系列文章从网上流传的Netflix架
 * [微服务管理](./all/微服务管理.md)
 * （todo）日志用 ElasticSearch
 * （todo）链路监控
-* （todo）各种猴子（Chaos/Latency/Janitor/SecurityMonkey 等）
+*  [Netflix各种猴子](./all/Netflix的各种Monkey.md)
 
 每个单元的功能简介，用JAVA如何实现他的使用，适合初学者和有使用需求的人。
 部分框架会解读源码，适合进阶的者学习。
